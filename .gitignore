@@ -1,0 +1,13 @@
+# 数据集（比赛数据包，不入库）
+煤气发电预测优化-初赛训练和测试集/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 运行生成的预测与调度结果（可由 run.ps1 / run.sh 重新生成）
+output/
+output_initial/
+
+# 运行日志
+*.log
