@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import tempfile
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+# Make direct invocation (`python tests/smoke_test.py`) behave like the
+# documented module invocation from the project root.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from main import run
 from pipeline import DispatchConfig, GAS_TYPES, MILPDispatcher, OPT_COLUMNS
