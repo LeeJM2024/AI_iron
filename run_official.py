@@ -75,9 +75,19 @@ def run(args):
                     unavailable=int(np.isnan(actual).sum()),zeros=int(np.sum(actual==0))))
     scores=pd.DataFrame(metrics)
     _atomic_csv(scores,out/'test_metrics_by_horizon.csv')
-    summary=scores.assign(period=np.where(scores.horizon<=8,'short','long_tail')).groupby(['period','target','model']).mape.mean().reset_index()
-    full=scores.groupby(['target','model']).mape.mean().reset_index().assign(period='long_96')
-    summary=pd.concat([summary,full],ignore_index=True)
+    # Disjoint horizon bands (review_iter_2.md H4).  The old `long_96` averaged
+    # h=1..96, which silently embedded the short-cycle score; these four are
+    # reported independently and a "24h improvement" claim must hold on both
+    # long_tail and h96_endpoint.
+    def band(h):
+        if h <= 8:
+            return 'short_8'
+        if h <= 48:
+            return 'mid'
+        return 'long_tail'
+    summary=scores.assign(period=scores.horizon.map(band)).groupby(['period','target','model']).mape.mean().reset_index()
+    endpoint=scores[scores.horizon==96].drop(columns='horizon').assign(period='h96_endpoint')
+    summary=pd.concat([summary,endpoint],ignore_index=True)
     _atomic_csv(summary,out/'test_summary.csv')
     origin=origins.max()
     dates=pd.date_range(origin+pd.Timedelta(minutes=15),periods=96,freq='15min',name='datetime')

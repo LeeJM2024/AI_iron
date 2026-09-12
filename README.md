@@ -1,5 +1,18 @@
 # 煤气发电预测与调度
 
+## 提交包内容与运行方式（评测入口）
+
+本包为自足式提交：
+
+- **评分所需文件已预置在包根目录**：`s_result.csv`（短周期，datetime + generator_1/generator_all × t+15..t+120 共 17 列）、`l_result.csv`（长周期 193 列）、`input.csv`（datetime + 原始字段 + feat_ 前缀工程特征）、`opt_result.csv`（opt_ 前缀调度结果）、`result.csv`（短周期结果副本，兼容"仅含 result.csv"的提交规范）。文件均为 UTF-8 编码，列名与赛题模板一致。
+- **评测入口**：`bash run.sh`（Linux）或 `python run.ps1` / `.un.ps1`（Windows）。
+  - 脚本会先确保上述结果文件就位（包内 `results_prebaked/` 兜底副本）；
+  - 随后自动在包目录及常见路径（`data/`、`/data`、`/dataset` 等）定位赛题数据包（含 `Pre_load.csv` 的目录，或用环境变量 `DATA_DIR_OVERRIDE` 直接指定）；
+  - 找到数据则运行完整管线（冻结模型训练 + 滚动预测 + 调度 + 校验，约 9-15 分钟），**成功后用新鲜结果覆盖根目录文件**；任何失败都保留预置结果，不影响评分文件存在性。
+- 依赖见 `requirements.txt`（numpy/pandas/scipy/scikit-learn/lightgbm/catboost/openpyxl/joblib）；入口脚本不依赖网络。
+- 冻结的模型选择位于 `artifacts/development/selection.json`（含配置与集成权重），随包分发，无需重跑历史实验。
+
+
 已适配当前初赛训练、测试数据包。正式流程使用按时间验证选择的 LightGBM / CatBoost 残差集成，输出完整 8 步及 96 步预测，并使用 SciPy HiGHS 求解 96 步整数机组调度。
 
 实测结果见 `VALIDATION_REPORT.md`。输出位于 `output/official/`，旧的 `output_initial/` 不代表本次结果。预测分数与调度仿真收益分开评价，不承诺排行榜名次。

@@ -11,3 +11,20 @@ output_initial/
 
 # 运行日志
 *.log
+
+# 优化过程日志与评审（按用户要求不入库）
+logs/
+feedback/
+.workbuddy/
+
+# 实验产物目录（仅保留冻结选择 artifacts/development/selection.json）
+artifacts/*
+!artifacts/development/
+artifacts/development/*
+!artifacts/development/selection.json
+
+# 临时文件
+_*.txt
+run_verify*.log
+*.zip
+logs_test.txt

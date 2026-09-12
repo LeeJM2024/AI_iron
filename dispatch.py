@@ -11,7 +11,9 @@ def solve_dispatch(cfg,timestamps,prices,net_inflow,gas_caps,efficiency,initial_
     n=len(timestamps)
     if not n:
         raise ValueError('Empty dispatch horizon')
-    timestamps=pd.DatetimeIndex(timestamps).as_unit('ns')
+    timestamps=pd.DatetimeIndex(timestamps)
+    if hasattr(timestamps, 'as_unit'):
+        timestamps = timestamps.as_unit('ns')
     if (not timestamps.is_unique or not timestamps.is_monotonic_increasing
             or timestamps.hasnans):
         raise ValueError('Dispatch timestamps must be unique, sorted and valid')
