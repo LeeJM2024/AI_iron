@@ -5,7 +5,7 @@ try {
     $env:PYTHONUTF8 = "1"
     $env:PYTHONIOENCODING = "utf-8"
     # 1) 兜底：预置结果先落位
-    foreach ($f in @("s_result.csv","l_result.csv","input.csv","opt_result.csv","result.csv")) {
+    foreach ($f in @("s_result.csv","l_result.csv","input.csv","opt_result.csv","result.csv","s_result.json")) {
         if (!(Test-Path -LiteralPath $f)) {
             Copy-Item -LiteralPath (Join-Path "results_prebaked" $f) -Destination $f -ErrorAction SilentlyContinue
         }
@@ -28,7 +28,7 @@ try {
         if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq $null) {
             python main.py --official --input-dir $dataDir --output-dir (Join-Path $ScriptDir "output/official")
             if ($LASTEXITCODE -eq 0) {
-                foreach ($f in @("s_result.csv","l_result.csv","input.csv","opt_result.csv")) {
+                foreach ($f in @("s_result.csv","l_result.csv","input.csv","opt_result.csv","s_result.json")) {
                     Copy-Item (Join-Path "output/official" $f) $f -ErrorAction SilentlyContinue
                 }
                 Copy-Item s_result.csv result.csv

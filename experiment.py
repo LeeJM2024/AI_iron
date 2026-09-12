@@ -72,6 +72,8 @@ def main():
         help='Wire the pooled SharedHorizonResidual in as an extra member')
     parser.add_argument('--shared-horizon-targets',nargs='+',choices=TARGETS,default=None,
         help='Targets admitting the pooled member (default: both)')
+    parser.add_argument('--n-seed-bag',type=int,default=1,
+        help='Average learned-member predictions over this many seeds')
     parser.add_argument('--tuning-cutoffs',nargs='+',
         default=['2025-04-23','2025-04-25','2025-04-27'],
         help='Cutoffs used to fit ensemble weights; post-break dates with >=5 '
@@ -107,6 +109,7 @@ def main():
         regime_lock_min_horizon=args.regime_lock_min_horizon,
         use_shared_horizon=args.shared_horizon,
         shared_horizon_targets=tuple(args.shared_horizon_targets) if args.shared_horizon_targets else TARGETS,
+        n_seed_bag=args.n_seed_bag,
         profile_days=args.profile_days,
         profile_regime_lock=not args.no_profile_regime_lock)
     horizons=sorted(set(int(h) for h in args.horizon_grid))

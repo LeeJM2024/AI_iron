@@ -12,7 +12,7 @@ export PYTHONIOENCODING=utf-8
 export LANG=C.UTF-8
 
 # --- 1) 兜底：确保评分所需文件在包根目录 ---
-for f in s_result.csv l_result.csv input.csv opt_result.csv result.csv; do
+for f in s_result.csv l_result.csv input.csv opt_result.csv result.csv s_result.json; do
   if [[ ! -f "$SCRIPT_DIR/$f" ]]; then
     cp "results_prebaked/$f" "$SCRIPT_DIR/$f" 2>/dev/null || true
   fi
@@ -62,7 +62,7 @@ if [[ -n "$DATA_DIR" ]]; then
     "$PY" experiment.py || echo "[submit] WARNING: experiment failed; using shipped selection"
   fi
   if "$PY" main.py --official --input-dir "$DATA_DIR" --output-dir "$SCRIPT_DIR/output/official"; then
-    for f in s_result.csv l_result.csv input.csv opt_result.csv; do
+    for f in s_result.csv l_result.csv input.csv opt_result.csv s_result.json; do
       cp "output/official/$f" "$SCRIPT_DIR/$f" 2>/dev/null || true
     done
     cp s_result.csv result.csv

@@ -195,6 +195,10 @@ class ModelConfig:
     # is a neutral persistence duplicate so the pool shape stays fixed.
     use_shared_horizon: bool = False
     shared_horizon_targets: tuple = TARGETS
+    # Seed bagging of the learned members: average predictions over this many
+    # seeds.  Variance reduction helps most where the ensemble has no better
+    # signal than the learned level, i.e. the short horizons that 初赛 scores.
+    n_seed_bag: int = 1
     seed: int = 2026
 
 
@@ -350,15 +354,26 @@ class ResidualEnsemble:
                     thread_count=cfg.threads, random_seed=cfg.seed,
                     verbose=False, allow_writing_files=False)
                 member_weights = weights.get(f'{target}/{bucket(h)}') if weights else None
-                if member_weights is None or member_weights[6] > 1e-6:
-                    lgb.fit(z.loc[rows],residual,sample_weight=w)
-                else:
-                    lgb = None
-                if member_weights is None or member_weights[7] > 1e-6:
-                    cat.fit(z.loc[rows],residual,sample_weight=w)
-                else:
-                    cat = None
-                self.models[target,h] = (lgb,cat)
+                lgb_bag, cat_bag = [], []
+                for bag_i in range(max(1, int(getattr(cfg, 'n_seed_bag', 1)))):
+                    bag_seed = cfg.seed + bag_i*101
+                    if member_weights is None or member_weights[6] > 1e-6:
+                        lgb_i = LGBMRegressor(objective='regression_l1', n_estimators=cfg.trees,
+                            num_leaves=cfg.leaves, learning_rate=.035, min_child_samples=60,
+                            colsample_bytree=.85, reg_lambda=5., reg_alpha=.1,
+                            random_state=bag_seed, n_jobs=cfg.threads, verbosity=-1,
+                            deterministic=True, force_col_wise=True)
+                        lgb_i.fit(z.loc[rows],residual,sample_weight=w)
+                        lgb_bag.append(lgb_i)
+                    if member_weights is None or member_weights[7] > 1e-6:
+                        cat_i = CatBoostRegressor(loss_function='MAE', iterations=cfg.trees,
+                            depth=5, learning_rate=.045, l2_leaf_reg=8,
+                            thread_count=cfg.threads, random_seed=bag_seed,
+                            verbose=False, allow_writing_files=False)
+                        cat_i.fit(z.loc[rows],residual,sample_weight=w)
+                        cat_bag.append(cat_i)
+                # None entry keeps the slot shape when a member is zero-weighted.
+                self.models[target,h] = (lgb_bag or [None], cat_bag or [None])
             LOG.info('Fitted residual members h=%s, cutoff=%s', h, cutoff)
         if cfg.use_shared_horizon:
             shr_cfg = SharedHorizonConfig(threads=cfg.threads, seed=cfg.seed)
@@ -380,15 +395,16 @@ class ResidualEnsemble:
         if cfg.smooth_learned <= 0 or len(fitted) <= 1:
             fitted = [h]
         z_by_h = {}
-        per_h = []
-        for hh in fitted:
-            if hh not in z_by_h:
-                z_by_h[hh] = horizon_features(x.loc[origins, self.columns], raw, hh)
-            per_h.append([m.predict(z_by_h[hh]) if m is not None else None
-                          for m in self.models[target, hh]])
         out = []
         for k in range(2):
-            stack = [row[k] for row in per_h if row[k] is not None]
+            stack = []
+            for hh in fitted:
+                if hh not in z_by_h:
+                    z_by_h[hh] = horizon_features(x.loc[origins, self.columns], raw, hh)
+                seed_preds = [m.predict(z_by_h[hh])
+                              for m in self.models[target, hh][k] if m is not None]
+                if seed_preds:
+                    stack.append(np.mean(np.stack(seed_preds), axis=0))
             out.append(np.mean(np.stack(stack), axis=0) if stack else np.zeros(len(origins)))
         return out
 

@@ -4,8 +4,9 @@
 
 本包为自足式提交：
 
-- **评分所需文件已预置在包根目录**：`s_result.csv`（短周期，datetime + generator_1/generator_all × t+15..t+120 共 17 列）、`l_result.csv`（长周期 193 列）、`input.csv`（datetime + 原始字段 + feat_ 前缀工程特征）、`opt_result.csv`（opt_ 前缀调度结果）、`result.csv`（短周期结果副本，兼容"仅含 result.csv"的提交规范）。文件均为 UTF-8 编码，列名与赛题模板一致。
-- **评测入口**：`bash run.sh`（Linux）或 `python run.ps1` / `.un.ps1`（Windows）。
+- **评分所需文件已预置在包根目录**：`s_result.csv`（短周期，datetime + generator_1/generator_all × t+15..t+120 共 17 列）、`l_result.csv`（长周期 193 列）、`input.csv`（datetime + 原始字段 + feat_ 前缀工程特征）、`opt_result.csv`（opt_ 前缀调度结果）、`result.csv`（短周期结果副本，兼容"仅含 result.csv"的提交规范）、`s_result.json`（数据字典要求的 JSON，含 columns/data 字段）。文件均为 UTF-8 编码，字段与变量名全英文，列名与赛题模板一致。
+- **评测入口**：`bash run.sh`（Linux）或 `python run.ps1` / `.
+un.ps1`（Windows）。
   - 脚本会先确保上述结果文件就位（包内 `results_prebaked/` 兜底副本）；
   - 随后自动在包目录及常见路径（`data/`、`/data`、`/dataset` 等）定位赛题数据包（含 `Pre_load.csv` 的目录，或用环境变量 `DATA_DIR_OVERRIDE` 直接指定）；
   - 找到数据则运行完整管线（冻结模型训练 + 滚动预测 + 调度 + 校验，约 9-15 分钟），**成功后用新鲜结果覆盖根目录文件**；任何失败都保留预置结果，不影响评分文件存在性。
