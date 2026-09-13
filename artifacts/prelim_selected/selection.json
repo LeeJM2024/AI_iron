@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "train_only": true,
+  "names": [
+    "persistence",
+    "ema4",
+    "ema8",
+    "ridge7",
+    "ridge21",
+    "ridge60",
+    "lgb14",
+    "lgb60",
+    "cat21"
+  ],
+  "specs": [
+    {
+      "name": "persistence",
+      "kind": "last",
+      "days": 30,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ema4",
+      "kind": "ema",
+      "days": 4,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ema8",
+      "kind": "ema",
+      "days": 8,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge7",
+      "kind": "ridge",
+      "days": 7,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge21",
+      "kind": "ridge",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge60",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "lgb14",
+      "kind": "lgb",
+      "days": 14,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "lgb60",
+      "kind": "lgb",
+      "days": 60,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "cat21",
+      "kind": "cat",
+      "days": 21,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    }
+  ],
+  "weights": {
+    "generator_1/15_30": {
+      "persistence": 0.0,
+      "ema4": 0.0,
+      "ema8": 0.0,
+      "ridge7": 0.052613327839052405,
+      "ridge21": 0.079986373987798,
+      "ridge60": 0.43015572756798,
+      "lgb14": 0.0,
+      "lgb60": 0.15561988538558658,
+      "cat21": 0.28162468521958306
+    },
+    "generator_1/45_120": {
+      "persistence": 0.0,
+      "ema4": 0.0,
+      "ema8": 0.03638070697487835,
+      "ridge7": 0.002638612902372962,
+      "ridge21": 0.6887408249475888,
+      "ridge60": 0.032255873305894335,
+      "lgb14": 0.0,
+      "lgb60": 0.0,
+      "cat21": 0.23998398186926562
+    },
+    "generator_all/15_30": {
+      "persistence": 0.0,
+      "ema4": 0.0,
+      "ema8": 0.015577607038407958,
+      "ridge7": 0.0,
+      "ridge21": 0.011300761242921653,
+      "ridge60": 0.35509659844724556,
+      "lgb14": 0.2995873483185261,
+      "lgb60": 0.31843768495289865,
+      "cat21": 0.0
+    },
+    "generator_all/45_120": {
+      "persistence": 0.0,
+      "ema4": 0.0,
+      "ema8": 0.08484788139726494,
+      "ridge7": 0.0,
+      "ridge21": 0.0,
+      "ridge60": 0.6537625612783214,
+      "lgb14": 0.0,
+      "lgb60": 0.2613895573244136,
+      "cat21": 0.0
+    }
+  },
+  "calibrations": {},
+  "tuning_cutoffs": [
+    "2025-04-21",
+    "2025-04-23",
+    "2025-04-25"
+  ],
+  "holdout_cutoff": "2025-04-29",
+  "family_selection": {
+    "base_leave_fold_out_mape": 0.048500226583369756,
+    "expanded_leave_fold_out_mape": 0.048451662391125035,
+    "minimum_relative_gain": 0.005,
+    "selected": "ensemble_base",
+    "holdout_used": false
+  },
+  "protocol": "Frozen parameters. 15-minute rolling observations. Bias correction uses only matured past forecasts."
+}

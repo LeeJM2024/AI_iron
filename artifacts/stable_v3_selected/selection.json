@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "name": "stable_v3",
+  "train_only": true,
+  "names": [
+    "persistence",
+    "ridge21",
+    "ridge60",
+    "lgb60",
+    "cat21",
+    "regime30",
+    "regime15"
+  ],
+  "specs": [
+    {
+      "name": "persistence",
+      "kind": "last",
+      "days": 30,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge21",
+      "kind": "ridge",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge60",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "lgb60",
+      "kind": "lgb",
+      "days": 60,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "cat21",
+      "kind": "cat",
+      "days": 21,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "regime30",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "regime15",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    }
+  ],
+  "weights": {
+    "generator_1/15_30": {
+      "persistence": 0.0,
+      "ridge21": 0.2781128730395523,
+      "ridge60": 0.45163644238215855,
+      "lgb60": 0.0,
+      "cat21": 0.2702506845782891,
+      "regime30": 0.0,
+      "regime15": 0.0
+    },
+    "generator_1/45_120": {
+      "persistence": 0.0,
+      "ridge21": 0.6138657091749129,
+      "ridge60": 0.0,
+      "lgb60": 0.3374615445722194,
+      "cat21": 0.04867274625286777,
+      "regime30": 0.0,
+      "regime15": 0.0
+    },
+    "generator_all/15_30": {
+      "persistence": 0.0,
+      "ridge21": 0.09213038921747381,
+      "ridge60": 0.1965965800286569,
+      "lgb60": 0.7112730307538693,
+      "cat21": 0.0,
+      "regime30": 0.0,
+      "regime15": 0.0
+    },
+    "generator_all/45_120": {
+      "persistence": 0.0,
+      "ridge21": 0.0,
+      "ridge60": 0.6000462204694631,
+      "lgb60": 0.3999537795305369,
+      "cat21": 0.0,
+      "regime30": 0.0,
+      "regime15": 0.0
+    }
+  },
+  "calibrations": {},
+  "transform": {
+    "kind": "stable",
+    "active_days": 7,
+    "robust_raw": true
+  },
+  "tuning_cutoffs": [
+    "2025-04-21",
+    "2025-04-23",
+    "2025-04-25",
+    "2025-04-27"
+  ],
+  "holdout_cutoff": "2025-04-29",
+  "family_selection": {
+    "generator_1": {
+      "base_cv": 0.05379552954102881,
+      "regime_cv": 0.05389289296608434,
+      "use_regime": false,
+      "minimum_gain": 0.005
+    },
+    "generator_all": {
+      "base_cv": 0.03928492689032942,
+      "regime_cv": 0.03931619358623478,
+      "use_regime": false,
+      "minimum_gain": 0.005
+    }
+  },
+  "protocol": "April-only selection. Rolling observations at/before origin. Active schema frozen before May."
+}

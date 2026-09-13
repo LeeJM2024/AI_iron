@@ -1,5 +1,61 @@
 # 煤气发电预测与调度
 
+## 共享步长候选（第四版）
+
+`./run_pooled.ps1` 使用 `artifacts/pooled_v4_selected/selection.json` 的历史验证选择，
+输出到独立的 `output/pooled_v4/`。它沿用第三版清洗，通过共享 8 个步长的 LightGBM
+学习相对负荷变化；只对在训练内留一折评估中达到收益阈值的目标启用。
+`./run_pooled.ps1 -Develop` 可完整重做历史实验。
+
+`run_prelim.py --warm-start-model output/stable_v3/prelim_model.joblib` 可复用第三版
+相同参数的成员，代码会核对训练数据哈希、截止时间、预处理配置与训练特征。
+只加载自己生成的可信 joblib 文件。新增模型仍正常训练，所有输出重新核验。
+
+## 第二轮：质量项与输入预处理优化
+
+针对平台反馈 `quality=40/50`、`out=0`、`invalid_col=0`，新增
+`run_stable.ps1`（内部使用 `run_prelim.py --selection artifacts/stable_v3_selected/selection.json`）。
+结果独立输出到 `output/stable_v3/`，不覆盖 82.5 分的上一包。
+
+此分支仅根据训练末期停用近期无变化的传感器，采用因果的非负荷传感器分位数截断，
+对变化量及周期特征使用有界非负编码，并同步重训模型。不得只更改提交 CSV 而继续用
+旧输入生成预测。完整实验可用 `./run_stable.ps1 -Develop` 重做。
+
+本地诊断不等于官方评分，不能根据“常数列=0”便声称质量已满分。
+第二轮实测结果和局限见 `STABLE_V3_REPORT.md`。
+
+## 2026-09-12 新增：初赛短周期专用入口
+
+本次优化代码与新结果独立保存，不覆盖下面旧流程的预置结果。**初赛请用
+`run_prelim.ps1` / `run_prelim.py`，提交它实际生成的两文件 ZIP，不要提交仓库根目录的旧 CSV。**
+
+```powershell
+.\run_prelim.ps1
+```
+
+默认读取本仓库上一级的官方训练、测试数据目录。也可显式指定：
+
+```powershell
+python -X utf8 run_prelim.py --train-dir "训练目录" --test-dir "测试目录" --output-dir output/prelim_v2
+```
+
+Linux：`bash run_prelim.sh "训练目录" "测试目录"`。先安装 `requirements.txt`。
+当前本机在独立 `.venv` 中安装 LightGBM/CatBoost，不更改上一级旧代码。
+
+新入口只处理初赛 8 个步长，不计算无关的 96 步调度。按目标及预测时距选择
+Ridge/鲁棒线性 ARX、LightGBM、CatBoost 与持续值候选。历史折外预测拟合非负
+MAPE 集成权重，最后一个 4 月窗口不参与权重拟合；5 月不参与参数选择。
+支持仅使用已经到期的历史预测误差进行滚动偏差修正。
+
+输出 `output/prelim_v2/LeeJM_gas_predict_prelim.zip`，ZIP 根目录只有
+`input.csv`、`s_result.csv`。同目录的模型、历史选择、训练标签截止审计、质量报告和
+测试误差明细用于复现，不混入提交 ZIP。异常退出不会返回预置预测冒充成功。
+`quality_audit.json` 不是官方评分器，不会把物理上有效的停机、零流量自动称作异常。
+
+完整重做训练内候选实验：`.\run_prelim.ps1 -Develop`。单独运行测试：
+`python -m pytest tests/test_prelim.py -q`。新模型与旧实现的实测比较见
+`PRELIM_IMPROVEMENT.md`。
+
 ## 提交包内容与运行方式（评测入口）
 
 本包为自足式提交：

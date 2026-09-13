@@ -4,6 +4,8 @@
 # Python 缓存
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
 
 # 运行生成的预测与调度结果（可由 run.ps1 / run.sh 重新生成）
 output/
@@ -22,6 +24,15 @@ artifacts/*
 !artifacts/development/
 artifacts/development/*
 !artifacts/development/selection.json
+!artifacts/prelim_selected/
+artifacts/prelim_selected/*
+!artifacts/prelim_selected/selection.json
+!artifacts/stable_v3_selected/
+artifacts/stable_v3_selected/*
+!artifacts/stable_v3_selected/selection.json
+!artifacts/pooled_v4_selected/
+artifacts/pooled_v4_selected/*
+!artifacts/pooled_v4_selected/selection.json
 
 # 临时文件
 _*.txt
