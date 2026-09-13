@@ -85,6 +85,22 @@ def bucket(h):
     return next(b for b in BUCKETS if h <= b)
 
 
+def estimator_slots(slot):
+    """Normalise a fitted-model slot to a tuple of estimators.
+
+    Legacy frozen artifacts stored ONE estimator per member; the current trainer
+    stores a seed-bag list.  If inference only understands the new layout, every
+    previously saved ``forecast_model.joblib`` becomes unreadable the moment the
+    trainer changes -- which is exactly how ``validate_outputs.py`` broke with
+    "'LGBMRegressor' object is not iterable".  Accept both layouts.
+    """
+    if slot is None:
+        return ()
+    if isinstance(slot, (list, tuple)):
+        return tuple(m for m in slot if m is not None)
+    return (slot,)
+
+
 def mape(actual, pred):
     """Unmodified observed labels; zero actuals are excluded and counted separately."""
     a, p = np.asarray(actual), np.asarray(pred)
@@ -295,12 +311,13 @@ class ResidualEnsemble:
         self._build_profiles(raw)
         full_start = self.cutoff-pd.Timedelta(int(cfg.train_days),unit='D')
         locked_start = full_start
-        if cfg.train_regime_lock and self.break_date is not None:
+        regime_lock_min_horizon = int(getattr(cfg, 'regime_lock_min_horizon', 0) or 0)
+        if getattr(cfg, 'train_regime_lock', False) and self.break_date is not None:
             locked_start = max(full_start, self.break_date)
         if locked_start > full_start:
             LOG.info('Regime lock active: h>%d trains from %s (break %s), '
                      'shorter horizons keep the %d-day window',
-                     cfg.regime_lock_min_horizon, locked_start, self.break_date,
+                     regime_lock_min_horizon, locked_start, self.break_date,
                      cfg.train_days)
         for h in horizons:
             h=int(h)
@@ -308,7 +325,8 @@ class ResidualEnsemble:
             # on, but short/mid horizons predict "current level + short-term
             # dynamics", where the wider window still helps (official evidence:
             # g1 h9-24 regressed 7.54->8.67% under a full lock).
-            if cfg.train_regime_lock and h > cfg.regime_lock_min_horizon:
+            if regime_lock_min_horizon is not None and getattr(cfg, 'train_regime_lock', False) \
+                    and h > regime_lock_min_horizon:
                 start = locked_start
             else:
                 start = full_start
@@ -375,7 +393,7 @@ class ResidualEnsemble:
                 # None entry keeps the slot shape when a member is zero-weighted.
                 self.models[target,h] = (lgb_bag or [None], cat_bag or [None])
             LOG.info('Fitted residual members h=%s, cutoff=%s', h, cutoff)
-        if cfg.use_shared_horizon:
+        if getattr(cfg, 'use_shared_horizon', False):
             shr_cfg = SharedHorizonConfig(threads=cfg.threads, seed=cfg.seed)
             shr = SharedHorizonResidual(shr_cfg)
             shr.break_date = self.break_date
@@ -391,8 +409,9 @@ class ResidualEnsemble:
         estimates reduces estimator variance without touching observed labels.
         """
         cfg = self.config
-        fitted = sorted(hh for (t, hh) in self.models if t == target and abs(hh-h) <= cfg.smooth_learned)
-        if cfg.smooth_learned <= 0 or len(fitted) <= 1:
+        smooth = int(getattr(cfg, 'smooth_learned', 0) or 0)
+        fitted = sorted(hh for (t, hh) in self.models if t == target and abs(hh-h) <= smooth)
+        if smooth <= 0 or len(fitted) <= 1:
             fitted = [h]
         z_by_h = {}
         out = []
@@ -402,7 +421,7 @@ class ResidualEnsemble:
                 if hh not in z_by_h:
                     z_by_h[hh] = horizon_features(x.loc[origins, self.columns], raw, hh)
                 seed_preds = [m.predict(z_by_h[hh])
-                              for m in self.models[target, hh][k] if m is not None]
+                              for m in estimator_slots(self.models[target, hh][k])]
                 if seed_preds:
                     stack.append(np.mean(np.stack(seed_preds), axis=0))
             out.append(np.mean(np.stack(stack), axis=0) if stack else np.zeros(len(origins)))
@@ -443,7 +462,7 @@ class ResidualEnsemble:
         lgb_pred, cat_pred = self._learned_predictions(raw, x, origins, h, target)
         learned = [now+p for p in (lgb_pred, cat_pred)]
         if (getattr(self, 'shared', None) is not None
-                and target in self.config.shared_horizon_targets):
+                and target in getattr(self.config, 'shared_horizon_targets', ())):
             shared = self.shared.predict(raw, x, origins, h, target)
         else:
             shared = now
@@ -604,6 +623,7 @@ def _convex_mape_weights(y, p, cap=6000, seed=2026):
     "zeros" that are artefacts, not evidence).  Here HiGHS returns the true
     optimum, or we fall back to the legacy solver if the LP is infeasible.
     """
+    from scipy import sparse
     from scipy.optimize import linprog
     ok = np.isfinite(y) & np.isfinite(p).all(axis=1) & (np.abs(y) > 1e-8)
     y, p = y[ok], p[ok]
@@ -620,12 +640,21 @@ def _convex_mape_weights(y, p, cap=6000, seed=2026):
     rhs = y * scale
     # variables: w (k), t (n)
     cost = np.concatenate([np.zeros(k), np.ones(n) / n])
-    A_ub = np.vstack([
-        np.hstack([-A, -np.eye(n)]),
-        np.hstack([A, -np.eye(n)]),
-    ])
+    # The constraint matrix is an identity block plus a single k-column block,
+    # so it is ~99.9% zeros.  Built DENSE at n=6000 it is 2*6000*6009*8 bytes
+    # (~1.15 GB) and one 12-fold leave-one-day-out pass solves this LP several
+    # hundred times -- enough to exhaust memory and abort the interpreter
+    # without a traceback.  HiGHS accepts sparse input and the LP -- hence its
+    # optimum -- is unchanged, so sparsity is a pure memory fix.
+    eye_n = sparse.identity(n, format="csr")
+    A_sp = sparse.csr_matrix(A)
+    A_ub = sparse.vstack([
+        sparse.hstack([-A_sp, -eye_n], format="csr"),
+        sparse.hstack([A_sp, -eye_n], format="csr"),
+    ], format="csr")
     b_ub = np.concatenate([-rhs, rhs])
-    A_eq = np.hstack([np.ones((1, k)), np.zeros((1, n))])
+    A_eq = sparse.hstack([sparse.csr_matrix(np.ones((1, k))),
+                          sparse.csr_matrix((1, n))], format="csr")
     b_eq = np.array([1.0])
     bounds = [(0.0, None)] * k + [(0.0, None)] * n
     res = linprog(cost, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq,
@@ -727,36 +756,44 @@ def select_weights(records, shrinkage_grid=(0.0, 0.25, 0.5, 0.75, 1.0)):
             # ---- leave-one-cutoff-out choice of the shrinkage factor ----
             best_lambda = 0.0
             if len(cutoffs) >= 2 and len(anchors) > 1:
-                scores = {}
-                for lam in shrinkage_grid:
-                    total, seen = 0.0, 0
-                    for c in cutoffs:
-                        tr_rows = [r for r in rows if r.get('cutoff') != c]
-                        ev_rows = [r for r in rows if r.get('cutoff') == c]
-                        if not tr_rows or not ev_rows:
-                            continue
-                        w_b = _fit(tr_rows)
-                        if w_b.sum() <= 0:
-                            w_b = uniform.copy()
-                        w_b = w_b / w_b.sum()
-                        per_h = {}
-                        for h in anchors:
-                            hr = [r for r in tr_rows if int(r['h']) == h]
-                            if hr:
-                                per_h[h] = _fit(hr)
+                # The per-cutoff fits -- the coarse weight w_b and every anchor
+                # weight in per_h -- do NOT depend on the shrinkage factor, so
+                # they are hoisted out of the lam loop.  The original nesting
+                # refitted all of them once per lam, i.e. 5x on the default
+                # grid, and this search is the hotspot of a leave-one-day-out
+                # pass that solves several hundred LPs.  Accumulation order over
+                # cutoffs is unchanged, so the scores are bit-identical.
+                totals = {lam: 0.0 for lam in shrinkage_grid}
+                seen = {lam: 0 for lam in shrinkage_grid}
+                for c in cutoffs:
+                    tr_rows = [r for r in rows if r.get('cutoff') != c]
+                    ev_rows = [r for r in rows if r.get('cutoff') == c]
+                    if not tr_rows or not ev_rows:
+                        continue
+                    w_b = _fit(tr_rows)
+                    if w_b.sum() <= 0:
+                        w_b = uniform.copy()
+                    w_b = w_b / w_b.sum()
+                    per_h = {}
+                    for h in anchors:
+                        hr = [r for r in tr_rows if int(r['h']) == h]
+                        if hr:
+                            per_h[h] = _fit(hr)
+                    ev_cache = {}
+                    for h in anchors:
+                        ev = [r for r in ev_rows if int(r['h']) == h]
+                        if ev:
+                            ev_cache[h] = _stack(ev)
+                    for lam in shrinkage_grid:
                         errs = []
-                        for h in anchors:
-                            ev = [r for r in ev_rows if int(r['h']) == h]
-                            if not ev:
-                                continue
-                            y_e, p_e = _stack(ev)
+                        for h, (y_e, p_e) in ev_cache.items():
                             vec = (1 - lam) * w_b + lam * per_h.get(h, w_b)
                             vec = vec / vec.sum() if vec.sum() > 0 else uniform
                             errs.append(float(np.mean(np.abs(y_e - p_e @ vec) / np.abs(y_e))))
                         if errs:
-                            total += float(np.mean(errs)); seen += 1
-                    if seen:
-                        scores[lam] = total / seen
+                            totals[lam] += float(np.mean(errs)); seen[lam] += 1
+                scores = {lam: totals[lam] / seen[lam]
+                          for lam in shrinkage_grid if seen[lam]}
                 if scores:
                     best_lambda = min(scores, key=scores.get)
 
