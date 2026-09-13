@@ -36,6 +36,9 @@ artifacts/pooled_v4_selected/*
 !artifacts/compact_v5/
 artifacts/compact_v5/*
 !artifacts/compact_v5/selection.json
+!artifacts/adaptive_selected/
+artifacts/adaptive_selected/*
+!artifacts/adaptive_selected/selection.json
 
 # 临时文件
 _*.txt

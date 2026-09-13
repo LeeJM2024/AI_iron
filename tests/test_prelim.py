@@ -115,7 +115,7 @@ def test_calibration_only_uses_matured_forecasts():
         np.testing.assert_array_equal(a[k][:51], prefix[k])
 
 
-@pytest.mark.parametrize('variant', ['v2', 'stable', 'pooled', 'compact'])
+@pytest.mark.parametrize('variant', ['v2', 'stable', 'pooled', 'compact', 'online', 'relative'])
 def test_end_to_end_submission_replays_exported_inputs(tmp_path, variant):
     raw = example()[list(TARGETS)]
     train_dir, test_dir, out = tmp_path/'train', tmp_path/'test', tmp_path/'output'
@@ -124,12 +124,16 @@ def test_end_to_end_submission_replays_exported_inputs(tmp_path, variant):
     csv_frame(raw.iloc[:700]).to_csv(train_dir/'Pre_load.csv', index=False)
     csv_frame(raw.iloc[700:]).to_csv(test_dir/'Pre_test_load.csv', index=False)
     spec = Spec('pooled_relative','pooled',days=6,trees=3,half_life=14.) if variant=='pooled' else Spec('ridge21', 'ridge', days=6, alpha=30.)
+    if variant=='online':
+        spec=Spec('online21_6h','online',days=6,alpha=100.)
+    if variant=='relative':
+        spec=Spec('relative60_mae','relative_linear',days=6,alpha=100.,half_life=14.)
     weights = {f'{t}/{b}': {spec.name: 1.} for t in TARGETS for b in ('15_30', '45_120')}
     selection = tmp_path/'selection.json'
     payload = dict(version=1, train_only=True, specs=[asdict(spec)], weights=weights)
     if variant != 'v2':
         payload['transform'] = dict(kind='stable', active_days=3, robust_raw=True)
-    if variant in ('compact','dynamics'):
+    if variant in ('compact','dynamics','online','relative'):
         payload['transform'] = dict(kind='compact', active_days=3, robust_raw=True)
     selection.write_text(json.dumps(payload), encoding='utf-8')
     args = SimpleNamespace(output_dir=out, selection=selection, train_dir=train_dir,

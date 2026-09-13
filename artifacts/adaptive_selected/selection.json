@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "name": "online_v10",
+  "train_only": true,
+  "specs": [
+    {
+      "name": "ridge21",
+      "kind": "ridge",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge60",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "lgb60",
+      "kind": "lgb",
+      "days": 60,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "pooled_relative",
+      "kind": "pooled",
+      "days": 90,
+      "trees": 500,
+      "alpha": 30.0,
+      "half_life": 21.0
+    },
+    {
+      "name": "online7_6h",
+      "kind": "online",
+      "days": 7,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online21_6h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online60_6h",
+      "kind": "online",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "online21_2h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative21",
+      "kind": "relative_linear",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative60",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative60_mae",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative14_mae",
+      "kind": "relative_linear",
+      "days": 14,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    }
+  ],
+  "weights": {
+    "generator_1/15_30": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.0,
+      "pooled_relative": 0.1723840162325605,
+      "online7_6h": 0.11511172392698103,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.01681563887030022,
+      "relative21": 0.0,
+      "relative60": 0.3496328791014187,
+      "relative60_mae": 0.3460557418687396,
+      "relative14_mae": 0.0
+    },
+    "generator_1/45_120": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.23720912221121135,
+      "pooled_relative": 0.3962389180081133,
+      "online7_6h": 0.129714178705664,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.0,
+      "relative60": 0.23683778107501147,
+      "relative60_mae": 0.0,
+      "relative14_mae": 0.0
+    },
+    "generator_all/15_30": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.46918849741028623,
+      "pooled_relative": 0.10178687374627536,
+      "online7_6h": 0.0,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.09960779233101794,
+      "relative60": 0.0,
+      "relative60_mae": 0.3294168365124205,
+      "relative14_mae": 0.0
+    },
+    "generator_all/45_120": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.14800646785163962,
+      "pooled_relative": 0.38684272032937417,
+      "online7_6h": 0.0,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.15107743756124892,
+      "relative60": 0.0,
+      "relative60_mae": 0.28584428619416463,
+      "relative14_mae": 0.02822908806357267
+    }
+  },
+  "calibrations": {},
+  "family_selection": {
+    "generator_1": {
+      "base_cv": 0.05540225091824674,
+      "online_cv": 0.055088106900409266,
+      "accepted": true,
+      "minimum_relative_gain": 0.005
+    },
+    "generator_all": {
+      "base_cv": 0.04130891795017802,
+      "online_cv": 0.040807128716262776,
+      "accepted": true,
+      "minimum_relative_gain": 0.005
+    }
+  },
+  "transform": {
+    "kind": "compact",
+    "active_days": 7,
+    "robust_raw": true,
+    "smooth_inputs": false,
+    "dynamic_features": false,
+    "quantile_features": false
+  },
+  "tuning_cutoffs": [
+    "2025-04-21",
+    "2025-04-23",
+    "2025-04-25",
+    "2025-04-27"
+  ],
+  "holdout_cutoff": "2025-04-29",
+  "protocol": "Hyperparameters/ensemble weights/transform fixed using April. Ridge coefficients refit using only observations strictly before each scheduled update. Never labels after forecast origin."
+}

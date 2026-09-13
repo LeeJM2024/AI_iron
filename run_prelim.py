@@ -165,6 +165,12 @@ def run(args):
         start = time.perf_counter()
         if reuse:
             model = reuse['models'][spec.name]
+        elif spec.kind == 'relative_linear':
+            from relative_linear import RelativeLinear
+            model = RelativeLinear(spec,args.threads).fit(train,x_train,cutoff)
+        elif spec.kind == 'online':
+            from online_model import OnlineRidge
+            model = OnlineRidge(spec,args.threads).fit(train,x_train,cutoff)
         elif warm and spec.name in warm['models'] and warm['models'][spec.name].spec == spec:
             model = warm['models'][spec.name]
             reused_members.append(spec.name)
@@ -229,6 +235,9 @@ def run(args):
     audit['submitted_input_replay'] = 'passed: actual input.csv reproduces s_result.csv within 1e-6'
     audit['prefix_causality'] = 'passed: full history vs truncated history at 3 origins'
     pd.DataFrame(audits).to_csv(out/'training_audit.csv', index=False)
+    update_rows=[r for m in saved['models'].values() for r in getattr(m,'update_audit',[])]
+    if update_rows:
+        pd.DataFrame(update_rows).to_csv(out/'online_update_audit.csv',index=False)
     dump_json(out/'quality_audit.json', audit)
     dump_json(out/'selection_frozen.json', selection)
     # ZIP has only the two files explicitly required by the published prelim rules.
@@ -262,10 +271,10 @@ def run(args):
                       lightgbm=lightgbm.__version__, catboost=catboost.__version__, sklearn=sklearn.__version__, scipy=scipy.__version__),
         source_hashes={str(p.resolve()): hashlib.sha256(p.read_bytes()).hexdigest()
             for directory in (args.train_dir, args.test_dir) for p in directory.glob('*.csv')},
-        protocol='May labels NOT used for weights/hyperparameters. Rolling observations through each origin only.',
+        protocol=selection.get('protocol','May labels NOT used for weights/hyperparameters. Rolling observations through each origin only.'),
         selection_name=selection.get('name', 'prelim_v2'),
         code_sha256={name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-            for name in ('run_prelim.py','prelim.py','stable_inputs.py','compact_inputs.py','pooled_short.py','pipeline.py')
+            for name in ('run_prelim.py','prelim.py','stable_inputs.py','compact_inputs.py','online_model.py','relative_linear.py','pooled_short.py','pipeline.py')
             if Path(__file__).with_name(name).exists()},
         metric='Mean of eight per-horizon MAPEs; nonzero observed raw labels only. Not official total score.',
         zip_sha256=hashlib.sha256(destination.read_bytes()).hexdigest())
