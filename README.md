@@ -1,5 +1,13 @@
 # 煤气发电预测与调度
 
+## 第五版：剩余 out 扣分的对照候选
+
+第四版已获平台反馈 87.6 分。新增 `./run_compact.ps1` 将核心输入缩减为 55 列，
+同步重训后输出 `output/compact_v5/LeeJM_gas_predict_prelim.zip`，不覆盖第四版。
+本地 z-score 异常计数为 0，但 IQR 计数仍非零；官方 out/comp 得分未知。
+单组负荷误差上升、总负荷误差下降，平均误差基本持平，所以这是质量优先的对照，
+不是已证明更高分的替代品。完整实测、风险和复现说明见 `COMPACT_V5_REPORT.md`。
+
 ## 共享步长候选（第四版）
 
 `./run_pooled.ps1` 使用 `artifacts/pooled_v4_selected/selection.json` 的历史验证选择，

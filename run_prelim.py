@@ -68,6 +68,9 @@ def quality_audit(inputs, predictions, origins, transform):
     x = inputs.drop(columns='datetime')
     z = (x-x.mean())/x.std().replace(0, np.nan)
     audit['diagnostic_abs_z_gt_3_cells'] = int(z.abs().gt(3).sum().sum())
+    q1,q3=x.quantile(.25),x.quantile(.75)
+    iqr=q3-q1
+    audit['diagnostic_iqr_1_5_cells'] = int(((x<q1-1.5*iqr)|(x>q3+1.5*iqr)).sum().sum())
     audit['diagnostic_abs_z_gt_3_by_column'] = {
         c: int(v) for c,v in z.abs().gt(3).sum().items() if v > 0}
     audit['negative_cells'] = int(x.lt(0).sum().sum())
@@ -125,6 +128,10 @@ def run(args):
                     raise ValueError('Input data changed since model was fitted')
     if reuse:
         transformer = reuse['transform']
+    elif selection.get('transform', {}).get('kind') == 'compact':
+        from compact_inputs import CompactInputTransform
+        transform_config = {k: v for k,v in selection['transform'].items() if k != 'kind'}
+        transformer = CompactInputTransform(**transform_config).fit(train)
     elif selection.get('transform', {}).get('kind') == 'stable':
         from stable_inputs import StableInputTransform
         transform_config = {k: v for k,v in selection['transform'].items() if k != 'kind'}
@@ -258,7 +265,7 @@ def run(args):
         protocol='May labels NOT used for weights/hyperparameters. Rolling observations through each origin only.',
         selection_name=selection.get('name', 'prelim_v2'),
         code_sha256={name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-            for name in ('run_prelim.py','prelim.py','stable_inputs.py','regime_ridge.py','pooled_short.py','pipeline.py')
+            for name in ('run_prelim.py','prelim.py','stable_inputs.py','compact_inputs.py','pooled_short.py','pipeline.py')
             if Path(__file__).with_name(name).exists()},
         metric='Mean of eight per-horizon MAPEs; nonzero observed raw labels only. Not official total score.',
         zip_sha256=hashlib.sha256(destination.read_bytes()).hexdigest())

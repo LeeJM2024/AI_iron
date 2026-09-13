@@ -33,6 +33,9 @@ artifacts/stable_v3_selected/*
 !artifacts/pooled_v4_selected/
 artifacts/pooled_v4_selected/*
 !artifacts/pooled_v4_selected/selection.json
+!artifacts/compact_v5/
+artifacts/compact_v5/*
+!artifacts/compact_v5/selection.json
 
 # 临时文件
 _*.txt

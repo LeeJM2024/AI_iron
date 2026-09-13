@@ -115,7 +115,7 @@ def test_calibration_only_uses_matured_forecasts():
         np.testing.assert_array_equal(a[k][:51], prefix[k])
 
 
-@pytest.mark.parametrize('variant', ['v2', 'stable', 'pooled'])
+@pytest.mark.parametrize('variant', ['v2', 'stable', 'pooled', 'compact'])
 def test_end_to_end_submission_replays_exported_inputs(tmp_path, variant):
     raw = example()[list(TARGETS)]
     train_dir, test_dir, out = tmp_path/'train', tmp_path/'test', tmp_path/'output'
@@ -129,6 +129,8 @@ def test_end_to_end_submission_replays_exported_inputs(tmp_path, variant):
     payload = dict(version=1, train_only=True, specs=[asdict(spec)], weights=weights)
     if variant != 'v2':
         payload['transform'] = dict(kind='stable', active_days=3, robust_raw=True)
+    if variant in ('compact','dynamics'):
+        payload['transform'] = dict(kind='compact', active_days=3, robust_raw=True)
     selection.write_text(json.dumps(payload), encoding='utf-8')
     args = SimpleNamespace(output_dir=out, selection=selection, train_dir=train_dir,
                            test_dir=test_dir, threads=1, compare=[], reuse_model=False)
