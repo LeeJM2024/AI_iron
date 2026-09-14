@@ -1,0 +1,53 @@
+{
+  "training_cutoff": "2025-04-30 23:45:00",
+  "origin_start": "2025-05-01 00:00:00",
+  "origin_end": "2025-05-02 23:45:00",
+  "training_seconds": 20.780748699995456,
+  "model_reused": false,
+  "inference_seconds": 0.8105366000017966,
+  "warm_start_members": [],
+  "total_seconds": 25.272503499996674,
+  "active_members": [
+    "lgb60",
+    "pooled_relative",
+    "online7_6h",
+    "relative21",
+    "relative60",
+    "relative60_mae",
+    "ema8",
+    "ema16"
+  ],
+  "versions": {
+    "python": "3.13.5",
+    "numpy": "2.5.1",
+    "pandas": "2.3.1",
+    "lightgbm": "4.7.0",
+    "catboost": "1.2.10",
+    "sklearn": "1.9.0",
+    "scipy": "1.18.0"
+  },
+  "source_hashes": {
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-参赛者使用\\Pre_gas.csv": "6af59cdf90a7986a99a28171c75d9e1653a8d9270247908dbade81f429b50dc3",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-参赛者使用\\Pre_gas_holder.csv": "42929b4815f06f703e3a2504ac1d6c07a47677817687e378c7cd45935e40b3f1",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-参赛者使用\\Pre_gas_user.csv": "677a6b9e40349d144dc7c78985110131a291e859cf74d46d1e71bbf6de13ac92",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-参赛者使用\\Pre_load.csv": "64c68d5e325a6aad40530f533110161205ed207adfb9ab27a28f4b762e6a5458",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-评分所用测试集\\Pre_test_gas.csv": "f06ab41b1b21287376f3a94c791c281fa882ae16f37cd81906084405694e4b42",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-评分所用测试集\\Pre_test_gas_holder.csv": "d556cc0be5a1f0a35f405224424ca780fc543230b10332639c660118d316a1bc",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-评分所用测试集\\Pre_test_gas_user.csv": "8f52da05f28490513c82e2e086de0e2f5a57ebc41e9a529919207087a928c407",
+    "D:\\learning\\ai_steel\\煤气发电预测优化-初赛训练和测试集\\初赛-评分所用测试集\\Pre_test_load.csv": "f68b02b140d5e8811060b533d4de3906d31414852a3b27facff6b500aad0ec8e"
+  },
+  "protocol": "Identical to V15 except the relative60 ridge penalty (300 -> 600), chosen on nine quiet April windows: relative60 alpha 300->600 improved generator_1 in 9/9 and generator_all in 8/9 paired windows; lgb60 half_life 14->21 improved generator_all in 7/9 (generator_1 5/9). Ensemble weights refit on the four quiet tuning folds. May labels are used only as the post-freeze promotion gate.",
+  "selection_name": "v30_rel600_lgb_hl21",
+  "code_sha256": {
+    "run_prelim.py": "824f2622def87d12bdfb6c11b47fa4a3fc935538018dca2018d7fc2d74b98880",
+    "prelim.py": "df4e775386a57d75d6a3ea28857d02f76a6a0f78a97d823ebdea0d2b47e2df9d",
+    "stable_inputs.py": "300e4943759f2e85383a06fd8b6022a9a748a7b5de67f6d661175518b87ad0a9",
+    "compact_inputs.py": "1e7ae3f5b54eba7ddf2db6805e356db01bed89522fc9e515ee27a53afe8cfc24",
+    "online_model.py": "b1c0541e01e95b75b61452b7dd847a6df12dfc31027ba1950b18c3ab5c2958f7",
+    "relative_linear.py": "0743ccb973a2cc869a4c7fd5f938ddcacc460d4d41efa96ae5df2298f6a05f49",
+    "pooled_short.py": "6c9de235069223926c46dc38903261a0e75cb26f4fcd20a53ccab0c3f2827780",
+    "pipeline.py": "9cfc10e72de048b29fe9a11b903b0adf778c65a0aa88681587a4c7cfec886d49"
+  },
+  "metric": "Mean of eight per-horizon MAPEs; nonzero observed raw labels only. Not official total score.",
+  "zip_sha256": "b75754449765a96583565027cc719ef6176e809e5d009ae6bc56b6ee6fab1893"
+}
