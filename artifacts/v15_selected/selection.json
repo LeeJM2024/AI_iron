@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "name": "v15_capped_pool",
+  "train_only": true,
+  "specs": [
+    {
+      "name": "ridge21",
+      "kind": "ridge",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge60",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "lgb60",
+      "kind": "lgb",
+      "days": 60,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "pooled_relative",
+      "kind": "pooled",
+      "days": 90,
+      "trees": 500,
+      "alpha": 30.0,
+      "half_life": 21.0
+    },
+    {
+      "name": "online7_6h",
+      "kind": "online",
+      "days": 7,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online21_6h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online60_6h",
+      "kind": "online",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "online21_2h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative21",
+      "kind": "relative_linear",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative60",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative60_mae",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative14_mae",
+      "kind": "relative_linear",
+      "days": 14,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "persistence",
+      "kind": "last"
+    },
+    {
+      "name": "ema8",
+      "kind": "ema",
+      "days": 8
+    },
+    {
+      "name": "ema16",
+      "kind": "ema",
+      "days": 16
+    }
+  ],
+  "weights": {
+    "generator_1/15_30": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.2501353122101005,
+      "pooled_relative": 0.12330090913122384,
+      "online7_6h": 0.08389537693739027,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.0,
+      "relative60": 0.4863752435337487,
+      "relative60_mae": 0.0,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.025398943953018668,
+      "ema16": 0.030894214234518005
+    },
+    "generator_1/45_120": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.18855173240142245,
+      "pooled_relative": 0.22154859408134514,
+      "online7_6h": 0.0809307649400713,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.0,
+      "relative60": 0.2741991344413812,
+      "relative60_mae": 0.0,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.2347697741357799
+    },
+    "generator_all/15_30": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.466774233224149,
+      "pooled_relative": 0.09605853451957415,
+      "online7_6h": 0.0,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.10905614710667094,
+      "relative60": 0.0,
+      "relative60_mae": 0.32172416596174025,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.006386919187865575
+    },
+    "generator_all/45_120": {
+      "ridge21": 0.0,
+      "ridge60": 0.0,
+      "lgb60": 0.14494013142628895,
+      "pooled_relative": 0.3362828593472822,
+      "online7_6h": 0.0,
+      "online21_6h": 0.0,
+      "online60_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative21": 0.15788201140495164,
+      "relative60": 0.0,
+      "relative60_mae": 0.30840202880762074,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.05249296901385645
+    }
+  },
+  "calibrations": {},
+  "family_selection": {
+    "generator_1": {
+      "pool": "active8+persistence+ema8+ema16",
+      "cap": 0.25
+    },
+    "generator_all": {
+      "pool": "active8 only (extra members carry zero weight)",
+      "cap": 0.25
+    }
+  },
+  "transform": {
+    "kind": "compact",
+    "active_days": 7,
+    "robust_raw": true,
+    "smooth_inputs": false,
+    "dynamic_features": false,
+    "quantile_features": false
+  },
+  "tuning_cutoffs": [
+    "2025-04-21",
+    "2025-04-23",
+    "2025-04-25",
+    "2025-04-27"
+  ],
+  "holdout_cutoff": "2025-04-29",
+  "protocol": "V10 hyperparameters, transform and member implementations unchanged. Blend weights refit on the four April tuning folds with each member weight capped at 0.25; generator_1 additionally blends persistence/EMA members. Chosen from an April-only bake-off of combination schemes and pools; no May label used for any choice."
+}

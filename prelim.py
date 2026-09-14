@@ -248,17 +248,33 @@ def fit_weights(records, names):
     return weights
 
 
-def ensemble_predictions(predictions, weights):
+def ensemble_predictions(predictions, weights, extreme=None, gating=None):
+    """Blend member predictions. With gating, origins flagged in `extreme`
+    use gating['extreme'] weights instead of the base (calm) weights."""
     result = {}
     for t in TARGETS:
         for h in HORIZONS:
-            w = weights[f'{t}/{band(h)}']
+            w = weights.get(f'{t}/h{h}') or weights[f'{t}/{band(h)}']
             p = sum(weight*predictions[name][t, h] for name, weight in w.items() if weight > 1e-8)
+            if extreme is not None and gating and extreme.any():
+                w = gating['extreme'][f'{t}/h{h}']
+                pe = sum(weight*predictions[name][t, h] for name, weight in w.items() if weight > 1e-8)
+                p = np.where(extreme, pe, p)
             result[f'{t}_t+{15*h}_pred'] = p
     for h in HORIZONS:
         group, total = f'generator_1_t+{15*h}_pred', f'generator_all_t+{15*h}_pred'
         result[group] = np.minimum(result[group], result[total])
     return result
+
+
+def gating_extreme_mask(x, gating, origins):
+    """Origin-row-only gate; NaN features resolve to calm (base weights)."""
+    thr = gating['thresholds']
+    s = x.loc[origins, gating['extreme_feature']].to_numpy(dtype=float)
+    lvl = x.loc[origins, gating['level_feature']].to_numpy(dtype=float)
+    with np.errstate(invalid='ignore'):
+        ext = (np.abs(s) >= thr['slope16_abs']) | (lvl < thr['low_level']) | (lvl > thr['high_level'])
+    return np.nan_to_num(ext.astype(float), nan=0.).astype(bool)
 
 
 def dump_json(path, value):

@@ -15,7 +15,8 @@ import numpy as np
 import pandas as pd
 
 from prelim import (InputTransform, ShortModel, Spec, TARGETS, HORIZONS, UPPER,
-                    read_data, future, score, ensemble_predictions, dump_json)
+                    read_data, future, score, ensemble_predictions, dump_json,
+                    gating_extreme_mask)
 from linear_challengers import fit_candidate
 from select_prelim import add_calibrations
 
@@ -23,7 +24,9 @@ from select_prelim import add_calibrations
 def replay_artifact(artifact, raw, x, origins):
     members = {n: m.predict(raw, x, origins) for n, m in artifact['models'].items()}
     members = add_calibrations(members, x, origins, artifact.get('calibrations', {}), raw)
-    return pd.DataFrame(ensemble_predictions(members, artifact['weights']), index=origins)
+    gating = artifact.get('gating')
+    extreme = gating_extreme_mask(x, gating, origins) if gating else None
+    return pd.DataFrame(ensemble_predictions(members, artifact['weights'], extreme, gating), index=origins)
 
 
 def csv_frame(frame):
@@ -128,6 +131,10 @@ def run(args):
                     raise ValueError('Input data changed since model was fitted')
     if reuse:
         transformer = reuse['transform']
+    elif selection.get('transform', {}).get('kind') == 'v6':
+        from v6_inputs import V6InputTransform
+        transform_config = {k: v for k,v in selection['transform'].items() if k != 'kind'}
+        transformer = V6InputTransform(**transform_config).fit(train)
     elif selection.get('transform', {}).get('kind') == 'compact':
         from compact_inputs import CompactInputTransform
         transform_config = {k: v for k,v in selection['transform'].items() if k != 'kind'}
@@ -155,6 +162,10 @@ def run(args):
         pd.testing.assert_frame_equal(warm['transform'].transform(train), x_train)
     weights = selection['weights']
     active = {n for w in weights.values() for n, v in w.items() if v > 1e-8}
+    gating = selection.get('gating')
+    if gating:
+        for w in gating['extreme'].values():
+            active |= {n for n, v in w.items() if v > 1e-8}
     calibrations = {n: c for n,c in selection.get('calibrations', {}).items() if n in active}
     active |= {c['base'] for c in calibrations.values()}
     models, audits, reused_members = {}, [], []
@@ -171,6 +182,21 @@ def run(args):
         elif spec.kind == 'online':
             from online_model import OnlineRidge
             model = OnlineRidge(spec,args.threads).fit(train,x_train,cutoff)
+        elif spec.kind == 'online_relative':
+            from online_relative import OnlineRelative
+            model = OnlineRelative(spec,args.threads).fit(train,x_train,cutoff)
+        elif spec.kind == 'online_pooled':
+            from online_pooled import OnlinePooled
+            model = OnlinePooled(spec,args.threads,physics=spec.name.startswith('onph')).fit(train,x_train,cutoff)
+        elif spec.kind == 'relative_physics':
+            from relative_physics import RelativePhysics
+            model = RelativePhysics(spec,args.threads).fit(train,x_train,cutoff)
+        elif spec.kind == 'gasbalance':
+            from gasbalance_short import GasBalanceShort
+            model = GasBalanceShort(spec,args.threads).fit(train,x_train,cutoff)
+        elif spec.kind == 'rev':
+            from gasbalance_short import RevShort
+            model = RevShort(spec,args.threads).fit(train,x_train,cutoff)
         elif warm and spec.name in warm['models'] and warm['models'][spec.name].spec == spec:
             model = warm['models'][spec.name]
             reused_members.append(spec.name)
@@ -186,7 +212,7 @@ def run(args):
         audits.extend(model.audit)
         print(f'Final {spec.name}: {time.perf_counter()-start:.1f}s', flush=True)
     artifact = dict(transform=transformer, models=models, weights=weights, cutoff=cutoff, calibrations=calibrations,
-                    feature_columns=transformer.feature_columns, selection=selection)
+                    gating=gating, feature_columns=transformer.feature_columns, selection=selection)
     joblib.dump(artifact, out/'prelim_model.joblib', compress=3)
     training_seconds = time.perf_counter()-tic
     # Parameters now frozen. May observations can only enter their own/past origins.
