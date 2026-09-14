@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "name": "v30_rel600_lgb_hl21",
+  "train_only": true,
+  "specs": [
+    {
+      "name": "ridge21",
+      "kind": "ridge",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "ridge60",
+      "kind": "ridge",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "lgb60",
+      "kind": "lgb",
+      "days": 60,
+      "trees": 240,
+      "alpha": 30.0,
+      "half_life": 21.0
+    },
+    {
+      "name": "pooled_relative",
+      "kind": "pooled",
+      "days": 90,
+      "trees": 500,
+      "alpha": 30.0,
+      "half_life": 21.0
+    },
+    {
+      "name": "online7_6h",
+      "kind": "online",
+      "days": 7,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online21_6h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "online60_6h",
+      "kind": "online",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "online21_2h",
+      "kind": "online",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative21",
+      "kind": "relative_linear",
+      "days": 21,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "relative60",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 600.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative60_mae",
+      "kind": "relative_linear",
+      "days": 60,
+      "trees": 240,
+      "alpha": 300.0,
+      "half_life": 14.0
+    },
+    {
+      "name": "relative14_mae",
+      "kind": "relative_linear",
+      "days": 14,
+      "trees": 240,
+      "alpha": 100.0,
+      "half_life": 0.0
+    },
+    {
+      "name": "persistence",
+      "kind": "last"
+    },
+    {
+      "name": "ema8",
+      "kind": "ema",
+      "days": 8
+    },
+    {
+      "name": "ema16",
+      "kind": "ema",
+      "days": 16
+    }
+  ],
+  "weights": {
+    "generator_1/15_30": {
+      "pooled_relative": 0.12822734206542777,
+      "lgb60": 0.28010094026084353,
+      "online7_6h": 0.0794770276331324,
+      "online21_2h": 0.0,
+      "relative60": 0.454198007720989,
+      "relative60_mae": 0.0,
+      "relative21": 0.0,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.019036809143513012,
+      "ema16": 0.03895987317609425
+    },
+    "generator_1/45_120": {
+      "pooled_relative": 0.2700695110450625,
+      "lgb60": 0.11678298774680866,
+      "online7_6h": 0.09469429746443808,
+      "online21_2h": 0.0,
+      "relative60": 0.28728149747406234,
+      "relative60_mae": 0.0,
+      "relative21": 0.0,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.23117170626962832
+    },
+    "generator_all/15_30": {
+      "pooled_relative": 0.12601955926097705,
+      "lgb60": 0.42516917440799284,
+      "online7_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative60": 0.0,
+      "relative60_mae": 0.36732740701412026,
+      "relative21": 0.069417725619933,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.012066133696976825
+    },
+    "generator_all/45_120": {
+      "pooled_relative": 0.3668595904670677,
+      "lgb60": 0.12958210071303716,
+      "online7_6h": 0.0,
+      "online21_2h": 0.0,
+      "relative60": 0.0,
+      "relative60_mae": 0.2926015644853811,
+      "relative21": 0.15824732367237418,
+      "relative14_mae": 0.0,
+      "persistence": 0.0,
+      "ema8": 0.0,
+      "ema16": 0.05270942066213988
+    }
+  },
+  "calibrations": {},
+  "family_selection": {
+    "generator_1": {
+      "member_changes": [
+        "relative60 alpha 300 -> 600 (9/9, 8/9 windows)",
+        "lgb60 half_life 14 -> 21 (5/9, 7/9 windows)"
+      ]
+    },
+    "generator_all": {
+      "member_changes": [
+        "relative60 alpha 300 -> 600 (9/9, 8/9 windows)",
+        "lgb60 half_life 14 -> 21 (5/9, 7/9 windows)"
+      ]
+    }
+  },
+  "transform": {
+    "kind": "compact",
+    "active_days": 7,
+    "robust_raw": true,
+    "smooth_inputs": false,
+    "dynamic_features": false,
+    "quantile_features": false
+  },
+  "tuning_cutoffs": [
+    "2025-04-21",
+    "2025-04-23",
+    "2025-04-25",
+    "2025-04-27"
+  ],
+  "holdout_cutoff": "2025-04-29",
+  "protocol": "Identical to V15 except the relative60 ridge penalty (300 -> 600), chosen on nine quiet April windows: relative60 alpha 300->600 improved generator_1 in 9/9 and generator_all in 8/9 paired windows; lgb60 half_life 14->21 improved generator_all in 7/9 (generator_1 5/9). Ensemble weights refit on the four quiet tuning folds. May labels are used only as the post-freeze promotion gate."
+}
