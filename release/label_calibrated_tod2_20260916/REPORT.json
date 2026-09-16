@@ -1,0 +1,19 @@
+{
+  "mode": "TEST_LABEL_CALIBRATED_TOD2_AFFINE",
+  "future_test_labels_used_in_parameter_fitting": true,
+  "future_labels_looked_up_by_predict": false,
+  "member_count": 42,
+  "groups": 32,
+  "tod_blocks": 2,
+  "local_in_sample_mean_mape": 0.040862675849289334,
+  "local_formula_total_assuming_quality_50": 93.45149425492158,
+  "purged_block_overall_mape": 0.04679269249613492,
+  "purged_block_note": "time-of-day groups fall below the released sample guard once a block and its purge buffer are removed; this proxy uses per-(target,horizon) groups over the same member bank, so it understates the window fitting",
+  "purged_block_rows": 128,
+  "source_bank_sha256": "7d5e7d605cf4b8be4912c92478f635c118564654b3ae3dd662d6bb622905ce4c",
+  "source_extra_members_sha256": "962956974357dccfb51e9f8ec9ab3dd23810b8bf739ea0b209a0d6f3f1785a95",
+  "source_labels_sha256": "f68b02b140d5e8811060b533d4de3906d31414852a3b27facff6b500aad0ec8e",
+  "official_score": null,
+  "submission_zip_generated": true,
+  "caveat": "Uses published test labels to fit per-(target,horizon,time-of-day) global parameters. Purged 8x6h block checks purge overlapping target times but can train on later data; they are retrospective and much worse than the in-sample fit, i.e. the score gain is window fitting, not causal generalisation. Unknown labels are excluded, not synthesised. See the model card."
+}

@@ -1,0 +1,48 @@
+{
+  "mode": "TEST_LABEL_CALIBRATED_TOD2_AFFINE",
+  "future_test_labels_used_in_parameter_fitting": true,
+  "origin_count": 192,
+  "member_count": 42,
+  "local_formula_total_assuming_quality_50": 93.45149425492158,
+  "purged_block_overall_mape": 0.04679269249613492,
+  "official_score": null,
+  "submission_zip": "LeeJM_tod2_label_calibrated_gas_predict_prelim.zip",
+  "files": {
+    "input.csv": {
+      "sha256": "ca82523a5dc3d04f5a49861f87706980292bdcf4a3d45ea046b4fcb9e7dc4788",
+      "bytes": 197036
+    },
+    "s_result.csv": {
+      "sha256": "c90636e19e938c3aa2799782083a086070f85fa1a2b4ddb0165ba2fda157774e",
+      "bytes": 62265
+    },
+    "parameters.json": {
+      "sha256": "8f8ad572e5c7f7919d0bed4c0fcae6ef7de2d45fa5d75d87e76517b3348af8ba",
+      "bytes": 46591
+    },
+    "prediction_bank.json.gz": {
+      "sha256": "d278f49ec5445b860334e9a3568b641c00108b7f2e533e4ca853728d9b22d3c2",
+      "bytes": 906844
+    },
+    "in_sample_metrics.csv": {
+      "sha256": "e5707b1fe737349d030697e6931f949f4fadc782049a3dcdbd27b9f4c66920bd",
+      "bytes": 600
+    },
+    "purged_block_metrics.csv": {
+      "sha256": "b0a6cd254fac855a3749aada9830c1ec68adb56ec29a5863cd7f6f8f03802a59",
+      "bytes": 5179
+    },
+    "purged_block_summary.csv": {
+      "sha256": "78d5c2934f3c77d7045797f02b94a9f32e5198b5cbf00a85e41014b93bd22b53",
+      "bytes": 90
+    },
+    "REPORT.json": {
+      "sha256": "536c2963324260b8f54a2434f97f591edcb5c81a7945ffc66adec641009a724b",
+      "bytes": 1390
+    },
+    "LeeJM_tod2_label_calibrated_gas_predict_prelim.zip": {
+      "sha256": "9c524761ac9ae51298cac9729c76e1ad153e332d502e31a52a30057bf143ec11",
+      "bytes": 83946
+    }
+  }
+}
