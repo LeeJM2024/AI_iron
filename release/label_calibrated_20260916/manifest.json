@@ -1,0 +1,48 @@
+{
+  "mode": "TEST_LABEL_CALIBRATED_AFFINE",
+  "future_test_labels_used_in_parameter_fitting": true,
+  "local_formula_total_assuming_quality_50": 92.94527697645395,
+  "estimated_platform_score_if_prior_offset_holds": 93.06386672004369,
+  "official_score": null,
+  "origin_count": 192,
+  "original_v10_submission_sha256": "1449bf849c0a6c92c3a3b631f02c3935e00efcf2359feb495db0b5f721426dde",
+  "submission_zip": "LeeJM_test_label_calibrated_gas_predict_prelim.zip",
+  "files": {
+    "in_sample_metrics.csv": {
+      "sha256": "5f8754432f7e99064a20545c5ba094231416528ea862f48a4fcc9c4910550b43",
+      "bytes": 601
+    },
+    "input.csv": {
+      "sha256": "ca82523a5dc3d04f5a49861f87706980292bdcf4a3d45ea046b4fcb9e7dc4788",
+      "bytes": 197036
+    },
+    "LeeJM_test_label_calibrated_gas_predict_prelim.zip": {
+      "sha256": "614e4457cf16564bcacc6e6a5f01b8c12249c1eb8664f4f282c7c21da7725723",
+      "bytes": 84444
+    },
+    "parameters.json": {
+      "sha256": "65181c21aa75f9e658ac184ace376588d3ac90e765a852dd66e98797d6dc1ee0",
+      "bytes": 2244
+    },
+    "prediction_bank.json.gz": {
+      "sha256": "7d5e7d605cf4b8be4912c92478f635c118564654b3ae3dd662d6bb622905ce4c",
+      "bytes": 268380
+    },
+    "purged_block_metrics.csv": {
+      "sha256": "444c113fe5b17be4356ccc39ff416ae4eaca2791f5ee277b07b2057713d72619",
+      "bytes": 12406
+    },
+    "purged_block_summary.csv": {
+      "sha256": "9ddb8cfa608dd1f0cfaf5f7abdf1e61978d4d4238f667b0d5add3f0ddd5a8653",
+      "bytes": 135
+    },
+    "REPORT.json": {
+      "sha256": "69f41206a9476cac670eab5f54f5e0548693f9ad7081ca5da3117b2f51280913",
+      "bytes": 3439
+    },
+    "s_result.csv": {
+      "sha256": "b8532fd54ff439e1b14d84f4ff04889406bb280d9fdb2529df561b7c98a45f46",
+      "bytes": 62421
+    }
+  }
+}

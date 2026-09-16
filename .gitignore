@@ -48,3 +48,6 @@ _*.txt
 run_verify*.log
 *.zip
 logs_test.txt
+
+# Explicit frozen calibration release; raw competition datasets remain excluded.
+!release/label_calibrated_20260916/*.zip

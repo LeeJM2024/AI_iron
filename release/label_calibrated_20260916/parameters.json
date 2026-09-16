@@ -1,0 +1,77 @@
+{
+  "mode": "TEST_LABEL_CALIBRATED_AFFINE",
+  "parameters": {
+    "generator_1/15_30": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.0,
+        "relative21": 0.20199274751765348,
+        "relative60": 0.0,
+        "inventory_absolute": 0.43117409401405177,
+        "inventory_relative": 0.2852984645631582,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 8.315355641760565,
+      "weight_sum": 0.9184653060948635,
+      "training_samples": 377
+    },
+    "generator_1/45_120": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.2520903316703698,
+        "relative21": 0.5362330937784704,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.0,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.11167657455115994
+      },
+      "bias": 9.98000683631514,
+      "weight_sum": 0.9000000000000002,
+      "training_samples": 1107
+    },
+    "generator_all/15_30": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.0,
+        "relative21": 0.4920151383142143,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.41904837243245074,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 28.63441981437355,
+      "weight_sum": 0.911063510746665,
+      "training_samples": 379
+    },
+    "generator_all/45_120": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.17146859616415183,
+        "online7_6h": 0.0,
+        "relative21": 0.7322705619797668,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.0,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 31.943642999999998,
+      "weight_sum": 0.9037391581439187,
+      "training_samples": 1113
+    }
+  }
+}

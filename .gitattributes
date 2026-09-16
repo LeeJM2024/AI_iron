@@ -1,0 +1,7 @@
+# Frozen release hashes must survive checkout on Windows and Linux.
+release/** -text whitespace=cr-at-eol
+input.csv -text whitespace=cr-at-eol
+s_result.csv -text whitespace=cr-at-eol
+result.csv -text whitespace=cr-at-eol
+s_result.json -text whitespace=cr-at-eol
+*.sh text eol=lf

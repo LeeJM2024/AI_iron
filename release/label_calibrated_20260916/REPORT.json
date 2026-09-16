@@ -1,0 +1,95 @@
+{
+  "mode": "TEST_LABEL_CALIBRATED_AFFINE",
+  "future_test_labels_used_in_parameter_fitting": true,
+  "future_labels_looked_up_by_predict": false,
+  "choices": {
+    "generator_1": "scale_offset",
+    "generator_all": "scale_offset"
+  },
+  "parameters": {
+    "generator_1/15_30": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.0,
+        "relative21": 0.20199274751765348,
+        "relative60": 0.0,
+        "inventory_absolute": 0.43117409401405177,
+        "inventory_relative": 0.2852984645631582,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 8.315355641760565,
+      "weight_sum": 0.9184653060948635,
+      "training_samples": 377
+    },
+    "generator_1/45_120": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.2520903316703698,
+        "relative21": 0.5362330937784704,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.0,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.11167657455115994
+      },
+      "bias": 9.98000683631514,
+      "weight_sum": 0.9000000000000002,
+      "training_samples": 1107
+    },
+    "generator_all/15_30": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.0,
+        "online7_6h": 0.0,
+        "relative21": 0.4920151383142143,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.41904837243245074,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 28.63441981437355,
+      "weight_sum": 0.911063510746665,
+      "training_samples": 379
+    },
+    "generator_all/45_120": {
+      "mode": "scale_offset",
+      "weights": {
+        "lgb60": 0.0,
+        "pooled_relative": 0.17146859616415183,
+        "online7_6h": 0.0,
+        "relative21": 0.7322705619797668,
+        "relative60": 0.0,
+        "inventory_absolute": 0.0,
+        "inventory_relative": 0.0,
+        "inventory_short": 0.0,
+        "frozen_v10": 0.0,
+        "github_v30": 0.0
+      },
+      "bias": 31.943642999999998,
+      "weight_sum": 0.9037391581439187,
+      "training_samples": 1113
+    }
+  },
+  "local_in_sample_mean_mape": 0.04402147166692735,
+  "local_formula_total_assuming_quality_50": 92.94527697645395,
+  "source_bank_sha256": "8232dbc7e7cb0aff434f27a4ff4d3206488e176fbb000d9ad1ceb48111578077",
+  "source_labels_sha256": "f68b02b140d5e8811060b533d4de3906d31414852a3b27facff6b500aad0ec8e",
+  "official_score": null,
+  "submission_zip_generated": true,
+  "caveat": "Uses published test labels to fit global parameters and select mode. Block checks purge overlapping target times but can train on later data. These are retrospective, not proof of causal generalization. Unknown labels are excluded, not synthesized.",
+  "zip_sha256": "614e4457cf16564bcacc6e6a5f01b8c12249c1eb8664f4f282c7c21da7725723",
+  "input_identical_to_frozen_v10": true,
+  "parameter_only_replay": "passed without reading label table; max absolute tolerance 1e-8",
+  "submission_scope": "Test-label-trained calibration, not a blind-test or causal-selection score",
+  "automatically_submitted": false
+}
