@@ -143,6 +143,6 @@ V15 = 4.6376% / 平台 92.6879 是当前最优；长步长上限探针（V27）�
 | 因果（无测试标签） | output/v30_bundle | 4.6265% | **92.7042** | 本会话主线；三点校准 δ=0.0739pp |
 | 因果 | output/v15_capped | 4.6376% | 92.6879 | 前一版 |
 | 因果 | output/adaptive_v10 | 4.6661% | 92.64 | 更早基线 |
-| 标签辅助（使用公开测试标签） | release/label_calibrated_20260916（ZIP SHA256 614e4457…） | 4.4021% | **93.03**（用户 2026-09-16 回传） | manifest 自标 future_test_labels_used_in_parameter_fitting: true；不满足 PROJECT_RULES 的无测试标签条件 |
+| 标签辅助（使用公开测试标签） | release/label_calibrated_20260916（ZIP SHA256 614e4457…） | 4.4021% | **93.03**（用户 2026-09-16 回传） | manifest 自标 future_test_labels_used_in_parameter_fitting: true；**用户 2026-09-16 明确确认该路线无合规问题，授权依据由用户负责**；本条不构成本仓库对主办方授权的核实 |
 
 两条路线互不改动对方产物。因果路线的下一步候选仍是 V37 = V30 + pool_tighter（待过本地门槛）。
